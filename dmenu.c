@@ -40,6 +40,7 @@ static int bh, mw, mh;
 static int dmx = 0; /* put dmenu at this x offset */
 static int dmy = 0; /* put dmenu at this y offset (measured from the bottom if topbar is 0) */
 static unsigned int dmw = 0; /* make dmenu this wide */
+static unsigned int dmh = 0; /* make dmenu this tall */
 static int inputw = 0, promptw;
 static int lrpad; /* sum of left and right padding */
 static size_t cursor;
@@ -613,7 +614,7 @@ setup(void)
 	/* calculate menu geometry */
 	bh = drw->fonts->h + 2;
 	lines = MAX(lines, 0);
-	mh = (lines + 1) * bh;
+	mh = dmh>0 ? dmh : (lines + 1) * bh;
 #ifdef XINERAMA
 	i = 0;
 	if (parentwin == root && (info = XineramaQueryScreens(dpy, &n))) {
@@ -693,7 +694,7 @@ static void
 usage(void)
 {
 	fputs("usage: dmenu [-bfiv] [-l lines] [-p prompt] [-fn font] [-m monitor]\n"
-	      "             [-x xoffset] [-y yoffset] [-z width]\n"
+	      "             [-x xoffset] [-y yoffset] [-z width] [-t total height]\n"
 	      "             [-nb color] [-nf color] [-sb color] [-sf color] [-w windowid]\n", stderr);
 	exit(1);
 }
@@ -727,6 +728,8 @@ main(int argc, char *argv[])
 			dmy = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "-z"))   /* make dmenu this wide */
 			dmw = atoi(argv[++i]);
+		else if (!strcmp(argv[i], "-t"))   /* make dmenu this tall */
+			dmh = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "-m"))
 			mon = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "-p"))   /* adds prompt to left of input field */
