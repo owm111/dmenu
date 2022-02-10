@@ -15,6 +15,8 @@ static const char *colors[SchemeLast][2] = {
 };
 /* -l option; if nonzero, dmenu uses vertical list with given number of lines */
 static unsigned int lines      = 0;
+/* -A option; alpha value for colors[SchemeNorm][ColBg] */
+static float alpha = 0.8;
 
 /*
  * Characters not considered part of a word while deleting words

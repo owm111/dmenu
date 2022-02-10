@@ -24,6 +24,9 @@ typedef struct {
 	GC gc;
 	Clr *scheme;
 	Fnt *fonts;
+	Visual *vis;
+	Colormap cmap;
+	unsigned int depth;
 } Drw;
 
 /* Drawable abstraction */
@@ -39,6 +42,7 @@ void drw_font_getexts(Fnt *font, const char *text, unsigned int len, unsigned in
 
 /* Colorscheme abstraction */
 void drw_clr_create(Drw *drw, Clr *dest, const char *clrname);
+void drw_clr_set_alpha(Clr *clr, float alpha);
 Clr *drw_scm_create(Drw *drw, const char *clrnames[], size_t clrcount);
 
 /* Cursor abstraction */
