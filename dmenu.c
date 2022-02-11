@@ -27,6 +27,7 @@
 
 /* enums */
 enum { SchemeNorm, SchemeSel, SchemeOut, SchemeLast }; /* color schemes */
+enum position { PosTop, PosBottom, PosCenter, PosSidebar };
 
 struct item {
 	char *text;
@@ -94,6 +95,15 @@ calcoffsets(void)
 	for (i = 0, prev = curr; prev && prev->left; prev = prev->left)
 		if ((i += (lines > 0) ? bh : textw_clamp(prev->left->text, n)) > n)
 			break;
+}
+
+static int
+max_textw(void)
+{
+	int len = 0;
+	for (struct item *item = items; item && item->text; item++)
+		len = MAX(TEXTW(item->text), len);
+	return len;
 }
 
 static void
@@ -617,6 +627,37 @@ run(void)
 	}
 }
 
+/* Sets *x, *y, mw, mh, and lines (if applicable) based on position and the
+ * given geometry of the parent/root window */
+static void
+calculate_geometry(int px, int py, int pw, int ph, int *x, int *y)
+{
+	switch (position) {
+	case PosTop:
+		*x = px;
+		*y = py;
+		mw = pw;
+		break;
+	case PosBottom:
+		*x = px;
+		*y = py + ph - mh;
+		mw = pw;
+		break;
+	case PosCenter:
+		mw = MIN(MAX(max_textw() + promptw, minwidth), pw);
+		*x = px + ((pw - mw) / 2);
+		*y = py + ((ph - mh) / 2);
+		break;
+	case PosSidebar:
+		mh = ph;
+		lines = mh / bh - 1;
+		mw = MIN(MAX(max_textw() + promptw, minwidth), pw);
+		*x = px;
+		*y = py;
+		break;
+	}
+}
+
 static void
 setup(void)
 {
@@ -643,6 +684,7 @@ setup(void)
 	/* calculate menu geometry */
 	bh = drw->fonts->h + 2;
 	bh = MAX(bh,lineheight);	/* make a menu line AT LEAST 'lineheight' tall */
+	promptw = (prompt && *prompt) ? TEXTW(prompt) - lrpad / 4 : 0;
 	lines = MAX(lines, 0);
 	mh = (lines + 1) * bh;
 #ifdef XINERAMA
@@ -671,9 +713,8 @@ setup(void)
 				if (INTERSECT(x, y, 1, 1, info[i]) != 0)
 					break;
 
-		x = info[i].x_org;
-		y = info[i].y_org + (topbar ? 0 : info[i].height - mh);
-		mw = info[i].width;
+		calculate_geometry(info[i].x_org, info[i].y_org,
+				info[i].width, info[i].height, &x, &y);
 		XFree(info);
 	} else
 #endif
@@ -681,9 +722,7 @@ setup(void)
 		if (!XGetWindowAttributes(dpy, parentwin, &wa))
 			die("could not get embedding window attributes: 0x%lx",
 			    parentwin);
-		x = 0;
-		y = topbar ? 0 : wa.height - mh;
-		mw = wa.width;
+		calculate_geometry(0, 0, wa.width, wa.height, &x, &y);
 	}
 	promptw = (prompt && *prompt) ? TEXTW(prompt) - lrpad / 4 : 0;
 	inputw = mw / 3; /* input width: ~33% of monitor width */
@@ -725,8 +764,8 @@ setup(void)
 static void
 usage(void)
 {
-	die("usage: dmenu [-bfinv] [-a alpha] [-l lines] [-h height] [-p prompt] [-fn font] [-m monitor]\n"
-	    "             [-nb color] [-nf color] [-sb color] [-sf color] [-w windowid]\n");
+	die("usage: dmenu [-bcfinstv] [-a alpha] [-l lines] [-h height] [-p prompt] [-fn font] [-m monitor]\n"
+	    "             [-mw width] [-nb color] [-nf color] [-sb color] [-sf color] [-w windowid]\n");
 }
 
 int
@@ -741,7 +780,13 @@ main(int argc, char *argv[])
 			puts("dmenu-"VERSION);
 			exit(0);
 		} else if (!strcmp(argv[i], "-b")) /* appears at the bottom of the screen */
-			topbar = 0;
+			position = PosBottom;
+		else if (!strcmp(argv[i], "-t"))   /* appears at the top of the screen */
+			position = PosTop;
+		else if (!strcmp(argv[i], "-c"))   /* appears in the center of the screen */
+			position = PosCenter;
+		else if (!strcmp(argv[i], "-s"))   /* appears on the side of the screen */
+			position = PosSidebar;
 		else if (!strcmp(argv[i], "-f"))   /* grabs keyboard before reading stdin */
 			fast = 1;
 		else if (!strcmp(argv[i], "-i")) { /* case-insensitive item matching */
@@ -776,6 +821,8 @@ main(int argc, char *argv[])
 			colors[SchemeSel][ColFg] = argv[++i];
 		else if (!strcmp(argv[i], "-w"))   /* embedding window id */
 			embed = argv[++i];
+		else if (!strcmp(argv[i], "-mw"))  /* minimum width when centered */
+			minwidth = atoi(argv[++i]);
 		else
 			usage();
 

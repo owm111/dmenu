@@ -2,7 +2,9 @@
 /* Default settings; can be overriden by command line. */
 
 static int instant = 0;                     /* -n  option; instant select only match         */
-static int topbar = 1;                      /* -b  option; if 0, dmenu appears at bottom     */
+/* -b, -c, -s, -t options; this is the default option */
+static enum position position = PosTop;
+static int minwidth = 500;                  /* -mw option; minimum width when centered or sidebar */
 /* -fn option overrides fonts[0]; default X11 font or font set */
 static const char *fonts[] = {
 	"monospace:size=10"
