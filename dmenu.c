@@ -595,6 +595,37 @@ run(void)
 	}
 }
 
+/* Sets *x, *y, mw, mh, and lines (if applicable) based on position and the
+ * given geometry of the parent/root window */
+static void
+calculate_geometry(int px, int py, int pw, int ph, int *x, int *y)
+{
+	switch (position) {
+	case PosTop:
+		*x = px;
+		*y = py;
+		mw = pw;
+		break;
+	case PosBottom:
+		*x = px;
+		*y = py + ph - mh;
+		mw = pw;
+		break;
+	case PosCenter:
+		mw = MIN(MAX(max_textw() + promptw, minwidth), pw);
+		*x = px + ((pw - mw) / 2);
+		*y = py + ((ph - mh) / 2);
+		break;
+	case PosSidebar:
+		mh = ph;
+		lines = mh / bh - 1;
+		mw = MIN(MAX(max_textw() + promptw, minwidth), pw);
+		*x = px;
+		*y = py;
+		break;
+	}
+}
+
 static void
 setup(void)
 {
@@ -620,6 +651,8 @@ setup(void)
 	/* calculate menu geometry */
 	bh = drw->fonts->h + 2;
 	promptw = (prompt && *prompt) ? TEXTW(prompt) - lrpad / 4 : 0;
+	lines = MAX(lines, 0);
+	mh = (lines + 1) * bh;
 #ifdef XINERAMA
 	i = 0;
 	if (parentwin == root && (info = XineramaQueryScreens(dpy, &n))) {
@@ -646,36 +679,8 @@ setup(void)
 				if (INTERSECT(x, y, 1, 1, info[i]))
 					break;
 
-		switch (position) {
-		case PosTop:
-			lines = MAX(lines, 0);
-			mh = (lines + 1) * bh;
-			x = info[i].x_org;
-			y = info[i].y_org;
-			mw = info[i].width;
-			break;
-		case PosBottom:
-			lines = MAX(lines, 0);
-			mh = (lines + 1) * bh;
-			x = info[i].x_org;
-			y = info[i].y_org + info[i].height - mh;
-			mw = info[i].width;
-			break;
-		case PosCenter:
-			lines = MAX(lines, 0);
-			mh = (lines + 1) * bh;
-			mw = MIN(MAX(max_textw() + promptw, minwidth), info[i].width);
-			x = info[i].x_org + ((info[i].width  - mw) / 2);
-			y = info[i].y_org + ((info[i].height - mh) / 2);
-			break;
-		case PosSidebar:
-			mh = info[i].height;
-			lines = mh / bh - 1;
-			mw = MIN(MAX(max_textw() + promptw, minwidth), info[i].width);
-			x = info[i].x_org;
-			y = info[i].y_org;
-			break;
-		}
+		calculate_geometry(info[i].x_org, info[i].y_org,
+				info[i].width, info[i].height, &x, &y);
 		XFree(info);
 	} else
 #endif
@@ -683,36 +688,7 @@ setup(void)
 		if (!XGetWindowAttributes(dpy, parentwin, &wa))
 			die("could not get embedding window attributes: 0x%lx",
 			    parentwin);
-		switch (position) {
-		case PosTop:
-			lines = MAX(lines, 0);
-			mh = (lines + 1) * bh;
-			x = 0;
-			y = 0;
-			mw = wa.width;
-			break;
-		case PosBottom:
-			lines = MAX(lines, 0);
-			mh = (lines + 1) * bh;
-			x = 0;
-			y = wa.height - mh;
-			mw = wa.width;
-			break;
-		case PosCenter:
-			lines = MAX(lines, 0);
-			mh = (lines + 1) * bh;
-			mw = MIN(MAX(max_textw() + promptw, minwidth), wa.width);
-			x = (wa.width  - mw) / 2;
-			y = (wa.height - mh) / 2;
-			break;
-		case PosSidebar:
-			mh = wa.height;
-			lines = mh / bh - 1;
-			mw = MIN(MAX(max_textw() + promptw, minwidth), wa.width);
-			x = 0;
-			y = 0;
-			break;
-		}
+		calculate_geometry(0, 0, wa.width, wa.height, &x, &y);
 	}
 	inputw = MIN(inputw, mw/3);
 	match();
