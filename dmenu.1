@@ -3,7 +3,7 @@
 dmenu \- dynamic menu
 .SH SYNOPSIS
 .B dmenu
-.RB [ \-bfitv ]
+.RB [ \-bcfitv ]
 .RB [ \-l
 .IR lines ]
 .RB [ \-m
@@ -12,6 +12,8 @@ dmenu \- dynamic menu
 .IR prompt ]
 .RB [ \-fn
 .IR font ]
+.RB [ \-mw
+.IR windowid ]
 .RB [ \-nb
 .IR color ]
 .RB [ \-nf
@@ -40,6 +42,9 @@ which lists programs in the user's $PATH and runs the result in their $SHELL.
 .B \-b
 dmenu appears at the bottom of the screen.
 .TP
+.B \-c
+dmenu appears in the center of the screen.
+.TP
 .B \-f
 dmenu grabs the keyboard before reading stdin if not reading from a tty. This
 is faster, but will lock up X until stdin reaches end\-of\-file.
@@ -59,6 +64,9 @@ defines the prompt to be displayed to the left of the input field.
 .TP
 .BI \-fn " font"
 defines the font or font set used.
+.TP
+.BI \-mw " width"
+defines the minimum width when centered.
 .TP
 .BI \-nb " color"
 defines the normal background color.

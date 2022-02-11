@@ -3,6 +3,7 @@
 
 /* -b, -t options; this is the default option */
 static enum position position = PosTop;
+static int minwidth = 500;                  /* -mw option; minimum width when centered */
 /* -fn option overrides fonts[0]; default X11 font or font set */
 static const char *fonts[] = {
 	"monospace:size=10"
