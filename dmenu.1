@@ -3,7 +3,7 @@
 dmenu \- dynamic menu
 .SH SYNOPSIS
 .B dmenu
-.RB [ \-bfinv ]
+.RB [ \-bcfinstv ]
 .RB [ \-l
 .IR lines ]
 .RB [ \-h
@@ -16,6 +16,8 @@ dmenu \- dynamic menu
 .IR prompt ]
 .RB [ \-fn
 .IR font ]
+.RB [ \-mw
+.IR width ]
 .RB [ \-nb
 .IR color ]
 .RB [ \-nf
@@ -43,6 +45,9 @@ which lists programs in the user's $PATH and runs the result in their $SHELL.
 .TP
 .B \-b
 dmenu appears at the bottom of the screen.
+.TP
+.B \-c
+dmenu appears in the center of the screen.
 .TP
 .B \-f
 dmenu grabs the keyboard before reading stdin if not reading from a tty. This
@@ -73,6 +78,9 @@ defines the prompt to be displayed to the left of the input field.
 .BI \-fn " font"
 defines the font or font set used.
 .TP
+.BI \-mw " width"
+defines the minimum width when centered or used as a sidebar.
+.TP
 .BI \-nb " color"
 defines the normal background color.
 .IR #RGB ,
@@ -82,11 +90,18 @@ and X color names are supported.
 .BI \-nf " color"
 defines the normal foreground color.
 .TP
+.B \-s
+dmenu appears on the side of the screen. dmenu lists items vertically enough to
+fill the screen and ignoring any settings for the \-l option.
+.TP
 .BI \-sb " color"
 defines the selected background color.
 .TP
 .BI \-sf " color"
 defines the selected foreground color.
+.TP
+.B \-t
+dmenu appears at the top of the screen.
 .TP
 .B \-v
 prints version information to stdout, then exits.
