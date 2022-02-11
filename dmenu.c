@@ -676,12 +676,12 @@ setup(void)
 		case PosTop:
 			x = 0;
 			y = 0;
-			mw = info[i].width;
+			mw = wa.width;
 			break;
 		case PosBottom:
 			x = 0;
 			y = wa.height - mh;
-			mw = info[i].width;
+			mw = wa.width;
 			break;
 		case PosCenter:
 			mw = MIN(MAX(max_textw() + promptw, minwidth), wa.width);
