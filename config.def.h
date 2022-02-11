@@ -1,9 +1,9 @@
 /* See LICENSE file for copyright and license details. */
 /* Default settings; can be overriden by command line. */
 
-/* -b, -t options; this is the default option */
+/* -b, -c, -s, -t options; this is the default option */
 static enum position position = PosTop;
-static int minwidth = 500;                  /* -mw option; minimum width when centered */
+static int minwidth = 500;                  /* -mw option; minimum width when centered or sidebar */
 /* -fn option overrides fonts[0]; default X11 font or font set */
 static const char *fonts[] = {
 	"monospace:size=10"
