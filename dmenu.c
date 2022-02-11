@@ -27,7 +27,7 @@
 
 /* enums */
 enum { SchemeNorm, SchemeSel, SchemeOut, SchemeLast }; /* color schemes */
-enum position { PosTop, PosBottom, PosCenter };
+enum position { PosTop, PosBottom, PosCenter, PosSidebar };
 
 struct item {
 	char *text;
@@ -619,9 +619,7 @@ setup(void)
 
 	/* calculate menu geometry */
 	bh = drw->fonts->h + 2;
-	lines = MAX(lines, 0);
 	promptw = (prompt && *prompt) ? TEXTW(prompt) - lrpad / 4 : 0;
-	mh = (lines + 1) * bh;
 #ifdef XINERAMA
 	i = 0;
 	if (parentwin == root && (info = XineramaQueryScreens(dpy, &n))) {
@@ -650,19 +648,32 @@ setup(void)
 
 		switch (position) {
 		case PosTop:
+			lines = MAX(lines, 0);
+			mh = (lines + 1) * bh;
 			x = info[i].x_org;
 			y = info[i].y_org;
 			mw = info[i].width;
 			break;
 		case PosBottom:
+			lines = MAX(lines, 0);
+			mh = (lines + 1) * bh;
 			x = info[i].x_org;
 			y = info[i].y_org + info[i].height - mh;
 			mw = info[i].width;
 			break;
 		case PosCenter:
+			lines = MAX(lines, 0);
+			mh = (lines + 1) * bh;
 			mw = MIN(MAX(max_textw() + promptw, minwidth), info[i].width);
 			x = info[i].x_org + ((info[i].width  - mw) / 2);
 			y = info[i].y_org + ((info[i].height - mh) / 2);
+			break;
+		case PosSidebar:
+			mh = info[i].height;
+			lines = mh / bh - 1;
+			mw = MIN(MAX(max_textw() + promptw, minwidth), info[i].width);
+			x = info[i].x_org;
+			y = info[i].y_org;
 			break;
 		}
 		XFree(info);
@@ -674,19 +685,32 @@ setup(void)
 			    parentwin);
 		switch (position) {
 		case PosTop:
+			lines = MAX(lines, 0);
+			mh = (lines + 1) * bh;
 			x = 0;
 			y = 0;
 			mw = wa.width;
 			break;
 		case PosBottom:
+			lines = MAX(lines, 0);
+			mh = (lines + 1) * bh;
 			x = 0;
 			y = wa.height - mh;
 			mw = wa.width;
 			break;
 		case PosCenter:
+			lines = MAX(lines, 0);
+			mh = (lines + 1) * bh;
 			mw = MIN(MAX(max_textw() + promptw, minwidth), wa.width);
 			x = (wa.width  - mw) / 2;
 			y = (wa.height - mh) / 2;
+			break;
+		case PosSidebar:
+			mh = wa.height;
+			lines = mh / bh - 1;
+			mw = MIN(MAX(max_textw() + promptw, minwidth), wa.width);
+			x = 0;
+			y = 0;
 			break;
 		}
 	}
@@ -749,6 +773,8 @@ main(int argc, char *argv[])
 			position = PosTop;
 		else if (!strcmp(argv[i], "-c"))   /* appears in the center of the screen */
 			position = PosCenter;
+		else if (!strcmp(argv[i], "-s"))   /* appears on the side of the screen */
+			position = PosSidebar;
 		else if (!strcmp(argv[i], "-f"))   /* grabs keyboard before reading stdin */
 			fast = 1;
 		else if (!strcmp(argv[i], "-i")) { /* case-insensitive item matching */

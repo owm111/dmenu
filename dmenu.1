@@ -3,7 +3,7 @@
 dmenu \- dynamic menu
 .SH SYNOPSIS
 .B dmenu
-.RB [ \-bcfitv ]
+.RB [ \-bcfistv ]
 .RB [ \-l
 .IR lines ]
 .RB [ \-m
@@ -13,7 +13,7 @@ dmenu \- dynamic menu
 .RB [ \-fn
 .IR font ]
 .RB [ \-mw
-.IR windowid ]
+.IR width ]
 .RB [ \-nb
 .IR color ]
 .RB [ \-nf
@@ -66,7 +66,7 @@ defines the prompt to be displayed to the left of the input field.
 defines the font or font set used.
 .TP
 .BI \-mw " width"
-defines the minimum width when centered.
+defines the minimum width when centered or used as a sidebar.
 .TP
 .BI \-nb " color"
 defines the normal background color.
@@ -76,6 +76,10 @@ and X color names are supported.
 .TP
 .BI \-nf " color"
 defines the normal foreground color.
+.TP
+.B \-s
+dmenu appears on the side of the screen. dmenu lists items vertically enough to
+fill the screen and ignoring any settings for the \-l option.
 .TP
 .BI \-sb " color"
 defines the selected background color.
