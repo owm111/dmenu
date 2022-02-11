@@ -4,12 +4,12 @@ dmenu \- dynamic menu
 .SH SYNOPSIS
 .B dmenu
 .RB [ \-bfiv ]
+.RB [ \-a
+.IR alpha ]
 .RB [ \-l
 .IR lines ]
 .RB [ \-m
 .IR monitor ]
-.RB [ \-A
-.IR alpha ]
 .RB [ \-p
 .IR prompt ]
 .RB [ \-fn
@@ -39,6 +39,9 @@ is a script used by
 which lists programs in the user's $PATH and runs the result in their $SHELL.
 .SH OPTIONS
 .TP
+.BI \-a " alpha"
+sets the alpha value for the normal background
+.TP
 .B \-b
 dmenu appears at the bottom of the screen.
 .TP
@@ -55,9 +58,6 @@ dmenu lists items vertically, with the given number of lines.
 .BI \-m " monitor"
 dmenu is displayed on the monitor number supplied. Monitor numbers are starting
 from 0.
-.TP
-.BI \-A " alpha"
-sets the alpha value for the normal background
 .TP
 .BI \-p " prompt"
 defines the prompt to be displayed to the left of the input field.
